@@ -57,6 +57,11 @@ DEFAULT_CONFIG: dict = {
         "preview": "ctrl+alt+f",
     },
     "custom_names": ["cost", "Var"],
+    "timing": {
+        "spell_gap_s": 0.35,      # gap between spoken letters
+        "symbols_gap_s": 0.4,     # gap between symbols in pass 3
+        "equation_gap_s": 0.5,    # gap between chunks of a whole-equation re-read
+    },
     "adaptive_pacing": {
         "enabled": False,   # opt-in; never records key values, only timing
         "idle_ms": 1500,

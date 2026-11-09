@@ -86,6 +86,10 @@ class Engine(threading.Thread):
     def position(self) -> int:
         return self._pos
 
+    @property
+    def speed_mult(self) -> float:
+        return self._speed_mult
+
     def _set_state(self, state: State) -> None:
         self._state = state
         chunk = self.chunks[self._pos] if self.chunks and self._pos < len(self.chunks) else None

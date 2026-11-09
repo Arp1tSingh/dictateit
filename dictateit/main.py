@@ -44,6 +44,7 @@ def parse_args(argv=None) -> argparse.Namespace:
     src.add_argument("--input", type=str, help="text/markdown file to dictate")
     src.add_argument("--stdin", action="store_true", help="read input from stdin")
     p.add_argument("--cli", action="store_true", help="terminal key controls instead of global hotkeys")
+    p.add_argument("--ui", action="store_true", help="open the control window (global hotkeys stay active)")
     p.add_argument("--dry-run", action="store_true", help="no audio; print what would be spoken")
     p.add_argument("--list-chunks", action="store_true", help="print the chunk plan and exit")
     p.add_argument("--backend", type=str, help="pyttsx3 | piper | edge | fake")
@@ -150,6 +151,35 @@ def run_hotkeys(engine: Engine, commands: queue.Queue, settings: Settings) -> No
         engine.join(timeout=2)
 
 
+def run_ui(engine: Engine, settings: Settings, chunks: list[Chunk]) -> None:
+    """Control window + global hotkeys + engine, three threads, one queue."""
+    from .hotkeys import HotkeyManager
+    from .ui.control_window import ControlWindow
+
+    ui_actions: queue.Queue = queue.Queue()
+
+    def on_ui_action(action: str) -> None:
+        cmd = ACTION_TO_CMD.get(action)
+        if cmd is not None:
+            commands.put(Command(cmd))
+
+    hotkeys = HotkeyManager(settings.get("hotkeys") or {},
+                            lambda a: commands.put(Command(ACTION_TO_CMD[a])))
+    window = ControlWindow(settings, chunks,
+                           on_close=lambda: commands.put(Command(Cmd.EXIT)),
+                           speed_fn=lambda: engine.speed_mult,
+                           on_action=on_ui_action)
+    engine.on_state = window.update_state
+    engine.start()
+    hotkeys.start()
+    try:
+        window.run()          # blocks until the window closes
+    finally:
+        hotkeys.stop()
+        engine.stop_now()
+        engine.join(timeout=2)
+
+
 def main(argv=None) -> int:
     args = parse_args(argv)
 
@@ -194,6 +224,8 @@ def main(argv=None) -> int:
 
     if args.cli:
         run_cli(engine, commands, chunks)
+    elif args.ui:
+        run_ui(engine, settings, chunks)
     elif args.dry_run or args.list_chunks:
         # dry-run: walk the whole plan through the engine with the fake backend
         commands.put(Command(Cmd.TOGGLE))

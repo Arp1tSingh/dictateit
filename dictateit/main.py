@@ -180,6 +180,19 @@ def run_ui(engine: Engine, settings: Settings, chunks: list[Chunk]) -> None:
         engine.join(timeout=2)
 
 
+def make_monitor(settings):
+    """The typing monitor is opt-in and timing-only (blueprint privacy note)."""
+    if not settings.get("adaptive_pacing.enabled", False):
+        return None
+    from .typing_monitor import TypingMonitor
+
+    monitor = TypingMonitor(int(settings.get("adaptive_pacing.idle_ms", 1500)))
+    monitor.start()
+    print("Adaptive pacing on: keystroke TIMING is recorded to extend write "
+          "gaps. Key values are never read or stored.")
+    return monitor
+
+
 def main(argv=None) -> int:
     args = parse_args(argv)
 
@@ -214,33 +227,38 @@ def main(argv=None) -> int:
     pack, letters = load_pack(settings.get("locale", "en_uk"))
     backend = make_backend(settings, args.dry_run)
     commands: queue.Queue = queue.Queue()
+    monitor = make_monitor(settings)
 
     def show_state(state, pos, total, chunk):
         if args.dry_run and state in (State.SPEAKING_1, State.SPEAKING_2, State.SPEAKING_3):
             return  # plan already printed
         print(state_line(state, pos, total, chunk), end="", flush=True)
 
-    engine = Engine(backend, chunks, settings, commands, pack, letters, on_state=show_state)
+    engine = Engine(backend, chunks, settings, commands, pack, letters,
+                    on_state=show_state, monitor=monitor)
 
-    if args.cli:
-        run_cli(engine, commands, chunks)
-    elif args.ui:
-        run_ui(engine, settings, chunks)
-    elif args.dry_run or args.list_chunks:
-        # dry-run: walk the whole plan through the engine with the fake backend
-        commands.put(Command(Cmd.TOGGLE))
-        engine.start()
-        import time
-        deadline = time.time() + 30
-        while time.time() < deadline and engine.state is not State.DONE:
-            time.sleep(0.05)
-        engine.stop_now()
-        engine.join(timeout=2)
-        print("\n(dry run complete)")
-    else:
-        run_hotkeys(engine, commands, settings)
-
-    backend.close()
+    try:
+        if args.cli:
+            run_cli(engine, commands, chunks)
+        elif args.ui:
+            run_ui(engine, settings, chunks)
+        elif args.dry_run or args.list_chunks:
+            # dry-run: walk the whole plan through the engine with the fake backend
+            commands.put(Command(Cmd.TOGGLE))
+            engine.start()
+            import time
+            deadline = time.time() + 30
+            while time.time() < deadline and engine.state is not State.DONE:
+                time.sleep(0.05)
+            engine.stop_now()
+            engine.join(timeout=2)
+            print("\n(dry run complete)")
+        else:
+            run_hotkeys(engine, commands, settings)
+    finally:
+        if monitor is not None:
+            monitor.stop()
+        backend.close()
     return 0
 
 

@@ -116,8 +116,17 @@ class Engine(threading.Thread):
     # -- interruptible waits ---------------------------------------------------
     def _wait(self, seconds: float, adaptive: bool = False) -> Command | None:
         """Wait up to `seconds`, draining the command queue. Returns a command
-        if one arrives (caller decides what it means)."""
-        deadline = time.time() + seconds
+        if one arrives (caller decides what it means).
+
+        Adaptive waits extend while the writer is still typing (the
+        TypingMonitor reports keystroke timing only), capped by
+        `adaptive_pacing.max_extension_s` so a stuck writer is never
+        waited on forever.
+        """
+        now = time.time()
+        deadline = now + seconds
+        hard = deadline + (float(self.settings.get(
+            "adaptive_pacing.max_extension_s", 10.0)) if adaptive else 0.0)
         while True:
             cmd = self._poll()
             if cmd is not None:
@@ -125,8 +134,10 @@ class Engine(threading.Thread):
             if adaptive and self.monitor is not None and self.monitor.active():
                 # the writer is still typing; push the deadline out
                 idle = float(self.settings.get("adaptive_pacing.idle_ms", 1500)) / 1000.0
-                deadline = max(deadline, time.time() + idle)
-                self.on_state(State.GAP, self._pos, len(self.chunks), self._chunk())
+                extended = min(max(deadline, time.time() + idle), hard)
+                if extended > deadline + 1e-9:
+                    deadline = extended
+                    self.on_state(State.GAP, self._pos, len(self.chunks), self._chunk())
             if time.time() >= deadline:
                 return None
             time.sleep(self.POLL_S)

@@ -44,11 +44,13 @@
     },
     "subscript": {
       "of": "sub",
+      "word": "subscript",
       "end": "end subscript"
     },
     "fraction": {
       "open": "fraction",
       "numerator": "numerator",
+      "end_numerator": "end numerator",
       "over": "over",
       "denominator": "denominator",
       "end": "end fraction"
@@ -96,6 +98,7 @@
       "sum": "sum",
       "product": "product",
       "limit": "limit",
+      "as": "as",
       "from": "from",
       "to": "to",
       "of": "of",

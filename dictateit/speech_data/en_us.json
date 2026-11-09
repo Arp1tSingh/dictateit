@@ -1,0 +1,155 @@
+{
+  "punctuation": {
+    ",": "comma",
+    ".": "period",
+    "?": "question mark",
+    "!": "exclamation mark",
+    ":": "colon",
+    ";": "semicolon",
+    "(": "open parenthesis",
+    ")": "close parenthesis",
+    "open_quote": "open quote",
+    "close_quote": "close quote",
+    "newline": "new line",
+    "paragraph": "new paragraph",
+    "hyphen": "hyphen",
+    "apostrophe": "apostrophe"
+  },
+  "math": {
+    "ops": {
+      "+": "plus",
+      "-": "minus",
+      "unary_minus": "minus",
+      "negative": "negative",
+      "*": "times",
+      "dot": "dot",
+      "/": "over",
+      "=": "equals",
+      "!=": "is not equal to",
+      "<": "is less than",
+      "<=": "is less than or equal to",
+      ">": "is greater than",
+      ">=": "is greater than or equal to",
+      "~=": "is approximately equal to",
+      "+-": "plus or minus",
+      "to": "tends to",
+      "implies": "implies",
+      "iff": "if and only if"
+    },
+    "power": {
+      "squared": "squared",
+      "cubed": "cubed",
+      "of": "to the power of",
+      "end": "end power"
+    },
+    "subscript": {
+      "of": "sub",
+      "end": "end subscript"
+    },
+    "fraction": {
+      "open": "fraction",
+      "numerator": "numerator",
+      "over": "over",
+      "denominator": "denominator",
+      "end": "end fraction"
+    },
+    "root": {
+      "square": "square root of",
+      "cube": "cube root of",
+      "general": "root of",
+      "degree": "degree",
+      "end": "end root"
+    },
+    "brackets": {
+      "(": "open parenthesis",
+      ")": "close parenthesis",
+      "[": "open square bracket",
+      "]": "close square bracket",
+      "{": "open curly bracket",
+      "}": "close curly bracket",
+      "mod_open": "open modulus",
+      "mod_close": "close modulus",
+      "level": "level"
+    },
+    "functions": {
+      "sin": "sine of",
+      "cos": "cosine of",
+      "tan": "tangent of",
+      "sec": "secant of",
+      "cosec": "cosecant of",
+      "csc": "cosecant of",
+      "cot": "cotangent of",
+      "arcsin": "arc sine of",
+      "arccos": "arc cosine of",
+      "arctan": "arc tangent of",
+      "log": "log of",
+      "ln": "natural log of",
+      "lg": "log base ten of",
+      "exp": "exp of",
+      "max": "maximum of",
+      "min": "minimum of",
+      "log_base": "log to the base",
+      "log_of": "of"
+    },
+    "calculus": {
+      "integral": "integral",
+      "sum": "sum",
+      "product": "product",
+      "limit": "limit",
+      "from": "from",
+      "to": "to",
+      "of": "of",
+      "lower_limit": "lower limit",
+      "upper_limit": "upper limit",
+      "partial": "partial",
+      "infinity": "infinity"
+    },
+    "matrix": {
+      "open": "open matrix",
+      "close": "close matrix",
+      "determinant": "determinant",
+      "rows": "rows",
+      "columns": "columns",
+      "row": "row"
+    },
+    "misc": {
+      "capital": "capital",
+      "point": "point",
+      "line": "line",
+      "and_so_on": "and so on",
+      "empty_set": "the empty set"
+    },
+    "greek": {
+      "alpha": "alpha",
+      "beta": "beta",
+      "gamma": "gamma",
+      "delta": "delta",
+      "epsilon": "epsilon",
+      "varepsilon": "epsilon",
+      "zeta": "zeeta",
+      "eta": "ayta",
+      "theta": "thayta",
+      "vartheta": "thayta",
+      "iota": "eye-oh-tuh",
+      "kappa": "kappa",
+      "lambda": "lambda",
+      "mu": "mew",
+      "nu": "noo",
+      "xi": "kseye",
+      "omicron": "oh-mick-ron",
+      "pi": "pie",
+      "rho": "roe",
+      "sigma": "sigma",
+      "tau": "taw",
+      "upsilon": "oop-silon",
+      "phi": "fie",
+      "varphi": "fee",
+      "chi": "kigh",
+      "psi": "sye",
+      "omega": "oh-may-guh"
+    }
+  },
+  "letters": {
+    "z": "zee"
+  }
+}

@@ -1,0 +1,17 @@
+# Core
+pyttsx3>=2.90
+pynput>=1.7.6
+pylatexenc>=2.10
+python-docx>=1.1
+matplotlib>=3.9
+numpy>=1.26
+sounddevice>=0.4.6
+soundfile>=0.12.1
+sympy>=1.13
+
+# Voice backends (v2)
+edge-tts>=6.1
+# piper-tts>=1.2  # optional: heavy (onnxruntime). Install separately if wanted.
+
+# Dev
+pytest>=8.0

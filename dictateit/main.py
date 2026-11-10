@@ -41,7 +41,7 @@ def parse_args(argv=None) -> argparse.Namespace:
     p = argparse.ArgumentParser(prog="dictateit", description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     src = p.add_mutually_exclusive_group(required=True)
-    src.add_argument("--input", type=str, help="text/markdown file to dictate")
+    src.add_argument("--input", type=str, help="text/markdown/docx file to dictate")
     src.add_argument("--stdin", action="store_true", help="read input from stdin")
     p.add_argument("--cli", action="store_true", help="terminal key controls instead of global hotkeys")
     p.add_argument("--ui", action="store_true", help="open the control window (global hotkeys stay active)")
@@ -58,8 +58,9 @@ def parse_args(argv=None) -> argparse.Namespace:
 def read_input(args) -> str:
     if args.stdin:
         return sys.stdin.read().lstrip("\ufeff")
-    from pathlib import Path
-    return Path(args.input).read_text(encoding="utf-8-sig")
+    from .loader import load_text
+
+    return load_text(args.input)
 
 
 def make_backend(settings, dry_run: bool):

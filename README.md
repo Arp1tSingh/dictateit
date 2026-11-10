@@ -1,7 +1,7 @@
 # DictateIt
 
-Text-to-speech dictation for people who **write while listening**: math
-homework, worked examples, proofs. It reads assignments in short chunks,
+Text-to-speech dictation for people who **write while listening** — supports
+algebra, worked examples, proofs. It reads assignments in short chunks,
 says everything twice (once naturally, once slowly and explicitly), and
 leaves a silent gap sized to what you have to write down.
 

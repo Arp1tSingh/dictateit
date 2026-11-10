@@ -5,6 +5,23 @@ homework, worked examples, proofs. It reads assignments in short chunks,
 says everything twice (once naturally, once slowly and explicitly), and
 leaves a silent gap sized to what you have to write down.
 
+## Features
+
+- **Phrase chunking** — prose in 3–8 word chunks at natural pause points; math in ≤6-token chunks split on the AST
+- **Double take** — every chunk twice: natural pass at normal speed, then a slow explicit pass that names every structure ("numerator", "end power", "close bracket")
+- **Write gaps** — silence after each chunk, scaled to words (text) or tokens (math) plus extra time for structures you must draw (fractions, matrices)
+- **Spoken punctuation and spelling** — "comma", "full stop", "new paragraph" on the slow pass; spell-the-last-word command
+- **Math dictation** — LaTeX (`$...$`, `\(..\)`), plain text (`x^2 + 3x = 0`) and Unicode (`x² + 3x − 4 = 0`) all reach the same AST; fractions, roots, powers, subscripts, big operators, matrices and multi-line derivations ("line one… line two…")
+- **Global hotkeys** — pause, repeat, previous/next, slower/faster, spell, symbol-by-symbol, whole-equation re-read; all remappable
+- **Control window** — small always-on-top tkinter remote with a rendered formula preview, profile switcher and hide-text toggle
+- **Adaptive pacing** (opt-in) — keystroke *timing only* extends the write gap while you are still writing; key values are never read
+- **Voice backends** — pyttsx3 (offline, default), Piper (offline neural), edge-tts (online neural); swappable behind one interface
+- **Word support** — dictate straight from `.docx` equation objects (OMML → LaTeX → the same AST), plus `.txt` / `.md` / `.tex` / stdin
+- **UK/US speech packs** — "full stop" vs "period", "zed" vs "zee"; switchable at runtime
+- **Profiles** — default / exam (no preview) / practice (3 repeats) / proofread
+
+## How it sounds
+
 ```
 Solve x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
 ```
@@ -19,10 +36,21 @@ becomes:
 
 ## Quick start
 
+Requires Windows (SAPI5/winsound) and Python 3.12+.
+
 ```powershell
+git clone https://github.com/Arp1tSingh/dictateit.git
+cd dictateit
 python -m venv .venv
-.venv\Scripts\pip install -e .[dev]        # or: pip install -r requirements.txt
+.venv\Scripts\pip install -r requirements.txt
 .venv\Scripts\python -m dictateit.main --input notes.txt --ui
+```
+
+Optional voice upgrades (see *requirements.txt* for the full list):
+
+```powershell
+.venv\Scripts\pip install edge-tts miniaudio   # online neural voices
+.venv\Scripts\pip install piper-tts            # offline neural voices
 ```
 
 ```powershell
@@ -165,12 +193,44 @@ download a Piper `.onnx` voice into `voices/` and point
 `audio.piper_voice` at it, or install `edge-tts` + `miniaudio` and set
 `audio.backend`.
 
+## Project structure
+
+```
+dictateit/
+├── dictateit/
+│   ├── main.py            # CLI entry: --input/--stdin/--ui/--cli/--dry-run
+│   ├── pipeline.py        # normalize → segment → chunk → fold → renumber
+│   ├── chunker.py         # text chunking (sentences → clauses → chunks)
+│   ├── normalizer.py      # quotes, "e.g.", "&", unicode math characters
+│   ├── models.py          # the Chunk dataclass
+│   ├── engine.py          # playback state machine (double take, gaps)
+│   ├── hotkeys.py         # pynput global hotkeys
+│   ├── typing_monitor.py  # adaptive pacing (timing only, opt-in)
+│   ├── spelling.py        # letter-by-letter respellings
+│   ├── settings.py        # config.json, profiles
+│   ├── speech.py          # speech pack loading
+│   ├── loader.py          # .txt/.md/.tex/.docx input
+│   ├── math/              # segmenter, parser, verbalizer, math_chunker,
+│   │                      #   ast_nodes, normalize_math, omml, preview
+│   ├── tts/               # pyttsx3 / piper / edge / fake backends + playback
+│   ├── ui/                # tkinter control window
+│   └── speech_data/       # en_uk.json, en_us.json, letters.json
+├── tests/                 # 370+ tests incl. a 44-formula corpus
+├── run.py                 # PyInstaller entry point
+└── dictateit.spec         # PyInstaller build spec
+```
+
 ## Development
 
 ```powershell
-.venv\Scripts\python -m pytest tests/ -q      # 350+ tests
+.venv\Scripts\python -m pytest tests/ -q      # 370+ tests
 ```
 
 The 44-formula corpus (`tests/formulas_corpus.json`) asserts that the
 same formula in LaTeX, plain text and Unicode produces identical ASTs,
 with sympy-based numeric equivalence spot checks (tests only).
+
+## License
+
+[MIT](LICENSE) © Arpit Singh
+
